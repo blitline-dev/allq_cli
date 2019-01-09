@@ -15,30 +15,28 @@ require_relative 'lib/peek'
 def process
   arg = ARGV[0]
 
-
   prompt = TTY::Prompt.new
   pastel = Pastel.new
-  actions = %w(stats stats_all peek clear_tube throttle exit)
-	if arg.nil?
-	  verb = prompt.enum_select("Action to perform?", actions)
-  else 
-    verb = actions[arg.to_i - 1]
-  end
+  actions = %w[stats stats_all peek clear_tube throttle exit]
+  verb = if arg.nil?
+           prompt.enum_select('Action to perform?', actions)
+         else
+           actions[arg.to_i - 1]
+         end
 
-  if verb=="stats"
+  if verb == 'stats'
     Stats.new.process(:all)
-  elsif verb=="stats_all"
+  elsif verb == 'stats_all'
     Stats.new.process(:each)
-  elsif verb=="clear_tube"
+  elsif verb == 'clear_tube'
     Clear.new.process
-  elsif verb=="throttle"
+  elsif verb == 'throttle'
     Throttle.new.process
-  elsif verb=="peek"
+  elsif verb == 'peek'
     Peek.new.process
-  elsif verb=="exit"
+  elsif verb == 'exit'
     exit 0
   end
 end
 
 process
-

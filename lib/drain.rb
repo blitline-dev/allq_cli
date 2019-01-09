@@ -1,4 +1,3 @@
 class Drain < Base
-  def process
-  end
+  def process; end
 end

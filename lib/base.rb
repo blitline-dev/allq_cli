@@ -1,6 +1,6 @@
 class Base
-	def initialize
-    url = ENV["ALLQ_LOCAL_URL"] || "127.0.0.1:8090"
+  def initialize
+    url = ENV['ALLQ_LOCAL_URL'] || '127.0.0.1:8090'
     allq_conf = Allq::Configuration.new do |config|
       config.host = url
     end
@@ -10,24 +10,24 @@ class Base
     @admin = Allq::AdminApi.new(raw_client)
   end
 
-	def get_text(v, num)
-		if v == "ready"
-   		"\033[35;1m" + v + " " + nice_number(num) + "\033[0m"
-		elsif v == "reserved"
-   		"\033[32;1m" + v + " " + nice_number(num) + "\033[0m"
-		else
-   		v + " " + nice_number(num)
-		end
-	end
+  def get_text(v, num)
+    if v == 'ready'
+      "\033[35;1m" + v + ' ' + nice_number(num) + "\033[0m"
+    elsif v == 'reserved'
+      "\033[32;1m" + v + ' ' + nice_number(num) + "\033[0m"
+    else
+      v + ' ' + nice_number(num)
+    end
+  end
 
   def nice_number(number)
-   number.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
-	end
+    number.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
+   end
 
   def ask_for_tube(action)
     prompt = TTY::Prompt.new(active_color: :cyan)
     tube = prompt.select("#{action}: Which tube?", get_all_tube_names)
-    return tube
+    tube
   end
 
   def get_number(question)
@@ -36,19 +36,18 @@ class Base
       q.required true
       q.validate /[0-9]*/
     end
-    return n.to_i
+    n.to_i
   end
 
   def display_job(job)
-		table = TTY::Table.new(multiline: true, column_widths: [20,60]) do |t|
-      t << ["job_id", job.id]
-      t << ["expireds", job.expireds]
-      t << ["releases", job.releases]
-      t << ["body", "\e[3m(see below)\e[0m"]
-     end
-    puts table.render(:unicode, padding: [0,2,0,2])
+    table = TTY::Table.new(multiline: true, column_widths: [20, 60]) do |t|
+      t << ['job_id', job.id]
+      t << ['expireds', job.expireds]
+      t << ['releases', job.releases]
+      t << ['body', "\e[3m(see below)\e[0m"]
+    end
+    puts table.render(:unicode, padding: [0, 2, 0, 2])
     puts job.body
-
   end
 
   def get_all_tube_names
@@ -61,8 +60,7 @@ class Base
         final_stats[name] = {} unless final_stats[name]
       end
     end
-	
-    return final_stats.keys
-  end
 
+    final_stats.keys
+  end
 end
