@@ -39,4 +39,17 @@ def process
   end
 end
 
+def pre_check
+  begin
+    base = Base.new
+    base.get_all_tube_names
+  rescue => ex
+    if ex.message.include?("Couldn't connect to server")
+      puts "Couldn't connect to server. Are you sure you have the allq_client running locally (in docker?) and it's available at #{base.base_url}"
+      exit 1
+    end
+  end
+end
+
+pre_check
 process

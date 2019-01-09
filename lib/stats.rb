@@ -62,6 +62,10 @@ class Stats < Base
     final_stats = {}
 
     raw_stats.each do |agg|
+      if agg.stats.empty?
+        puts 'Server found OK, but no data is in it'
+        return {}
+      end
       final_stats['action_count'] = final_stats['action_count'].to_i + agg.action_count.to_i
       agg.stats.each do |tube_ref|
         name = tube_ref.tube
@@ -78,7 +82,8 @@ class Stats < Base
 
   def all
     stats = get_stats_agg
-    puts 'Failed to get stats!' unless stats && !stats.to_s.empty?
+    return if stats.empty?
+
     global = stats.delete('action_count')
     headers = stats.keys.sort
     vals = %w[ready reserved delayed buried parents]

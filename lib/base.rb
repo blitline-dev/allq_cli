@@ -1,6 +1,6 @@
 class Base
   def initialize
-    url = ENV['ALLQ_LOCAL_URL'] || '127.0.0.1:8090'
+    url = base_url
     allq_conf = Allq::Configuration.new do |config|
       config.host = url
     end
@@ -8,6 +8,10 @@ class Base
     raw_client = Allq::ApiClient.new(allq_conf)
     @client = Allq::ActionsApi.new(raw_client)
     @admin = Allq::AdminApi.new(raw_client)
+  end
+
+  def base_url
+    ENV['ALLQ_LOCAL_URL'] || '127.0.0.1:8090'
   end
 
   def get_text(v, num)
