@@ -3,7 +3,6 @@ require 'tty'
 require 'tty-table'
 require 'allq_rest'
 require 'base64'
-require 'lz4-ruby'
 require 'awesome_print'
 
 require_relative 'lib/base'
