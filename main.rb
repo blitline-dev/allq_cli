@@ -1,7 +1,7 @@
 require 'pty'
 require 'tty'
 require 'tty-table'
-require 'allq_client'
+require 'allq_rest'
 require 'base64'
 require 'lz4-ruby'
 require 'awesome_print'
@@ -48,7 +48,7 @@ def pre_check
     base.get_all_tube_names
   rescue => ex
     if ex.message.include?("Couldn't connect to server")
-      puts "Couldn't connect to server. Are you sure you have the allq_client running locally (in docker?) and it's available at #{base.base_url}"
+      puts "Couldn't connect to server. Are you sure you have the allq_rest running locally (in docker?) and it's available at #{base.base_url}"
       exit 1
     end
   end

@@ -14,12 +14,10 @@ class Stats < Base
 
   def each
     get_stats_each do |stats|
-      global = stats['action_count'].to_i
       headers = []
       vals = %w[ready reserved delayed buried parents]
       rows = []
       tube_collection = stats
-      action_count = tube_collection.delete('action_count')
       key = tube_collection.delete('server_name')
       headers = []
       tube_collection.each do |name, tube|
@@ -43,6 +41,8 @@ class Stats < Base
     raw_stats.each do |agg|
       final_stats = {}
       final_stats['action_count'] = final_stats['action_count'].to_i + agg.action_count.to_i
+      final_stats['job_get'] = final_stats['job_get'].to_i + agg.job_get.to_i
+      final_stats['job_put'] = final_stats['job_put'].to_i + agg.job_put.to_i
       final_stats['server_name'] = agg.server_name
       agg.stats.each do |tube_ref|
         name = tube_ref.tube
@@ -67,6 +67,8 @@ class Stats < Base
         return {}
       end
       final_stats['action_count'] = final_stats['action_count'].to_i + agg.action_count.to_i
+      final_stats['job_get'] = final_stats['job_get'].to_i + agg.job_get.to_i
+      final_stats['job_put'] = final_stats['job_put'].to_i + agg.job_put.to_i
       agg.stats.each do |tube_ref|
         name = tube_ref.tube
         final_stats[name] = {} unless final_stats[name]
@@ -85,6 +87,9 @@ class Stats < Base
     return if stats.empty?
 
     global = stats.delete('action_count')
+    job_get =  stats.delete('job_get')
+    job_put =  stats.delete('job_put')
+
     headers = stats.keys.sort
     vals = %w[ready reserved delayed buried parents]
     rows = []
@@ -98,6 +103,6 @@ class Stats < Base
 
     table = TTY::Table.new header: headers, rows: rows, width: 140, resize: false
     puts table.render(:unicode, padding: [0, 2, 0, 2])
-    puts "Total Action Count: #{nice_number(global)}"
+    puts "Total Action Count: #{nice_number(global)}\nGets: #{nice_number(job_get)}\nPuts: #{nice_number(job_put)}"
   end
 end
