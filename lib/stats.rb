@@ -13,26 +13,31 @@ class Stats < Base
   end
 
   def each
+
     get_stats_each do |stats|
-      headers = []
-      vals = %w[ready reserved delayed buried parents]
-      rows = []
+      return if stats.empty?
+
       tube_collection = stats
       key = tube_collection.delete('server_name')
-      headers = []
-      tube_collection.each do |name, tube|
-        headers << name
-        vals.each_with_index do |v, i|
-          st = tube
-          rows[i] = [] unless rows[i]
-          rows[i] << get_text(v, st[v])
-        end
+      action_count = tube_collection.delete('action_count')
+      job_get = tube_collection.delete('job_get')
+      job_put = tube_collection.delete('job_put')
+      vals = %w[ready reserved delayed buried parents]
+      rows = []
+
+      tube_collection.each do |tube, stats|
+        rows << [tube, stats[vals[0]], stats[vals[1]], stats[vals[2]], stats[vals[3]], stats[vals[4]]]
       end
+
+      headers = ["tube"] + vals
+      table = TTY::Table.new header: headers, rows: rows, width: 140, resize: false
       puts ''
       puts ' Server -> ' + key.to_s + ':'
-      table = TTY::Table.new header: headers, rows: rows, width: 140, resize: true
       puts table.render(:unicode, padding: [0, 2, 0, 2])
+      puts "Total Action Count: #{nice_number(action_count)}\nGets: #{nice_number(job_get)}\nPuts: #{nice_number(job_put)}"
+
     end
+
   end
 
   def get_stats_each
@@ -93,14 +98,10 @@ class Stats < Base
     headers = stats.keys.sort
     vals = %w[ready reserved delayed buried parents]
     rows = []
-    vals.each_with_index do |v, i|
-      headers.each do |h|
-        st = stats[h]
-        rows[i] = [] unless rows[i]
-        rows[i] << get_text(v, st[v])
-      end
+    stats.keys.sort.each do |tube|
+      rows << [tube, stats[tube][vals[0]], stats[tube][vals[1]], stats[tube][vals[2]], stats[tube][vals[3]], stats[tube][vals[4]]]
     end
-
+    headers = ["tube"] + vals
     table = TTY::Table.new header: headers, rows: rows, width: 140, resize: false
     puts table.render(:unicode, padding: [0, 2, 0, 2])
     puts "Total Action Count: #{nice_number(global)}\nGets: #{nice_number(job_get)}\nPuts: #{nice_number(job_put)}"

@@ -44,7 +44,7 @@ class Base
   end
 
   def display_job(job)
-    table = TTY::Table.new(multiline: true, column_widths: [20, 60]) do |t|
+    table = TTY::Table.new(multiline: true, column_widths: [30, 60]) do |t|
       t << ['job_id', job.id]
       t << ['expireds', job.expireds]
       t << ['releases', job.releases]
