@@ -56,6 +56,7 @@ end
 def pre_check
   begin
     base = Base.new
+puts base.base_url
     base.get_all_tube_names
   rescue => ex
     if ex.message.include?("Couldn't connect to server")
@@ -64,6 +65,5 @@ def pre_check
     end
   end
 end
-
 pre_check
 process

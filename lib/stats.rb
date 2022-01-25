@@ -13,7 +13,6 @@ class Stats < Base
   end
 
   def each
-
     get_stats_each do |stats|
       return if stats.empty?
 
@@ -24,20 +23,25 @@ class Stats < Base
       job_put = tube_collection.delete('job_put')
       vals = %w[ready reserved delayed buried parents]
       rows = []
-
+      pastel = Pastel.new
+      
       tube_collection.each do |tube, stats|
-        rows << [tube, stats[vals[0]], stats[vals[1]], stats[vals[2]], stats[vals[3]], stats[vals[4]]]
+        ready = format(stats[vals[0]])
+        reserved = format(stats[vals[1]])
+        delayed = format(stats[vals[2]])
+        buried = format(stats[vals[3]])
+        parents = format(stats[vals[4]])
+
+        rows << [tube, ready, reserved, delayed, buried, parents]
       end
 
-      headers = ["tube"] + vals
+      headers = ['tube'] + vals
       table = TTY::Table.new header: headers, rows: rows, width: 140, resize: false
       puts ''
       puts ' Server -> ' + key.to_s + ':'
       puts table.render(:unicode, padding: [0, 2, 0, 2])
       puts "Total Action Count: #{nice_number(action_count)}\nGets: #{nice_number(job_get)}\nPuts: #{nice_number(job_put)}"
-
     end
-
   end
 
   def get_stats_each
@@ -99,11 +103,25 @@ class Stats < Base
     vals = %w[ready reserved delayed buried parents]
     rows = []
     stats.keys.sort.each do |tube|
-      rows << [tube, stats[tube][vals[0]], stats[tube][vals[1]], stats[tube][vals[2]], stats[tube][vals[3]], stats[tube][vals[4]]]
+      ready = format(stats[tube][vals[0]])
+      reserved = format(stats[tube][vals[1]])
+      delayed = format(stats[tube][vals[2]])
+      buried = format(stats[tube][vals[3]])
+      parents = format(stats[tube][vals[3]])
+
+      rows << [tube, ready, reserved, delayed, buried, parents]
     end
-    headers = ["tube"] + vals
+    headers = ['tube'] + vals
     table = TTY::Table.new header: headers, rows: rows, width: 140, resize: false
     puts table.render(:unicode, padding: [0, 2, 0, 2])
     puts "Total Action Count: #{nice_number(global)}\nGets: #{nice_number(job_get)}\nPuts: #{nice_number(job_put)}"
+  end
+
+  def format(val)
+    pastel = Pastel.new
+    if val.to_i > 0
+      return pastel.yellow(val.to_s)
+    end
+    val.to_s
   end
 end
