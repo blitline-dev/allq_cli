@@ -107,7 +107,7 @@ class Stats < Base
       reserved = format(stats[tube][vals[1]])
       delayed = format(stats[tube][vals[2]])
       buried = format(stats[tube][vals[3]])
-      parents = format(stats[tube][vals[3]])
+      parents = format(stats[tube][vals[4]])
 
       rows << [tube, ready, reserved, delayed, buried, parents]
     end
