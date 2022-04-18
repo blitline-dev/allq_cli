@@ -32,7 +32,7 @@ class Stats < Base
         buried = format(stats[vals[3]])
         parents = format(stats[vals[4]])
 
-        rows << [tube, ready, reserved, delayed, buried, parents]
+        rows << [tube, ready, reserved, delayed, buried, parents, avg, tps]
       end
 
       headers = ['tube'] + vals
@@ -61,6 +61,8 @@ class Stats < Base
         final_stats[name]['delayed'] = final_stats[name]['delayed'].to_i + tube_ref.delayed.to_i
         final_stats[name]['buried'] = final_stats[name]['buried'].to_i + tube_ref.buried.to_i
         final_stats[name]['parents'] = final_stats[name]['parents'].to_i + tube_ref.parents.to_i
+        final_stats[name]['avg'] = final_stats[name]['avg'].to_i + tube_ref.avg.to_i
+        final_stats[name]['tps'] = final_stats[name]['tps'].to_i + tube_ref.tps.to_i
       end
       yield final_stats
     end
@@ -86,6 +88,8 @@ class Stats < Base
         final_stats[name]['delayed'] = final_stats[name]['delayed'].to_i + tube_ref.delayed.to_i
         final_stats[name]['buried'] = final_stats[name]['buried'].to_i + tube_ref.buried.to_i
         final_stats[name]['parents'] = final_stats[name]['parents'].to_i + tube_ref.parents.to_i
+        final_stats[name]['avg'] = final_stats[name]['avg'].to_i + tube_ref.avg.to_i
+        final_stats[name]['tps'] = final_stats[name]['tps'].to_i + tube_ref.tps.to_i
       end
     end
     final_stats
