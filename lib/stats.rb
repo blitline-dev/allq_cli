@@ -21,7 +21,7 @@ class Stats < Base
       action_count = tube_collection.delete('action_count')
       job_get = tube_collection.delete('job_get')
       job_put = tube_collection.delete('job_put')
-      vals = %w[ready reserved delayed buried parents]
+      vals = %w[ready reserved delayed buried parents avg tps]
       rows = []
       pastel = Pastel.new
       
@@ -31,6 +31,8 @@ class Stats < Base
         delayed = format(stats[vals[2]])
         buried = format(stats[vals[3]])
         parents = format(stats[vals[4]])
+        avg = format(stats[vals[5]])
+        tps = format(stats[vals[6]])
 
         rows << [tube, ready, reserved, delayed, buried, parents, avg, tps]
       end
@@ -46,7 +48,6 @@ class Stats < Base
 
   def get_stats_each
     raw_stats = @admin.stats_get
-
     raw_stats.each do |agg|
       final_stats = {}
       final_stats['action_count'] = final_stats['action_count'].to_i + agg.action_count.to_i
@@ -61,8 +62,14 @@ class Stats < Base
         final_stats[name]['delayed'] = final_stats[name]['delayed'].to_i + tube_ref.delayed.to_i
         final_stats[name]['buried'] = final_stats[name]['buried'].to_i + tube_ref.buried.to_i
         final_stats[name]['parents'] = final_stats[name]['parents'].to_i + tube_ref.parents.to_i
-        final_stats[name]['avg'] = final_stats[name]['avg'].to_i + tube_ref.avg.to_i
-        final_stats[name]['tps'] = final_stats[name]['tps'].to_i + tube_ref.tps.to_i
+        if !tube_ref.tps.nil?
+          final_stats[name]['avg'] = get_dynamic_avg(name + "avg", tube_ref.avg.to_f)
+          final_stats[name]['tps'] = get_dynamic_avg(name + "tps", tube_ref.tps.to_f)
+        else
+          final_stats[name]['avg'] = -1
+          final_stats[name]['tps'] = -1
+        end
+
       end
       yield final_stats
     end
@@ -88,8 +95,13 @@ class Stats < Base
         final_stats[name]['delayed'] = final_stats[name]['delayed'].to_i + tube_ref.delayed.to_i
         final_stats[name]['buried'] = final_stats[name]['buried'].to_i + tube_ref.buried.to_i
         final_stats[name]['parents'] = final_stats[name]['parents'].to_i + tube_ref.parents.to_i
-        final_stats[name]['avg'] = final_stats[name]['avg'].to_i + tube_ref.avg.to_i
-        final_stats[name]['tps'] = final_stats[name]['tps'].to_i + tube_ref.tps.to_i
+        if !tube_ref.tps.nil?
+          final_stats[name]['avg'] = get_dynamic_avg(name + "avg", tube_ref.avg.to_f)
+          final_stats[name]['tps'] = get_dynamic_avg(name + "tps", tube_ref.tps.to_f)
+        else
+          final_stats[name]['avg'] = -1
+          final_stats[name]['tps'] = -1
+        end
       end
     end
     final_stats
@@ -104,7 +116,7 @@ class Stats < Base
     job_put =  stats.delete('job_put')
 
     headers = stats.keys.sort
-    vals = %w[ready reserved delayed buried parents]
+    vals = %w[ready reserved delayed buried parents avg tps]
     rows = []
     stats.keys.sort.each do |tube|
       ready = format(stats[tube][vals[0]])
@@ -112,8 +124,10 @@ class Stats < Base
       delayed = format(stats[tube][vals[2]])
       buried = format(stats[tube][vals[3]])
       parents = format(stats[tube][vals[4]])
+      avg = format(stats[tube][vals[5]])
+      tps = format(stats[tube][vals[6]])
 
-      rows << [tube, ready, reserved, delayed, buried, parents]
+      rows << [tube, ready, reserved, delayed, buried, parents, avg, tps]
     end
     headers = ['tube'] + vals
     table = TTY::Table.new header: headers, rows: rows, width: 140, resize: false

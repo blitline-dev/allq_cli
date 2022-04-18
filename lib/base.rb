@@ -8,6 +8,7 @@ class Base
     raw_client = Allq::ApiClient.new(allq_conf)
     @client = Allq::ActionsApi.new(raw_client)
     @admin = Allq::AdminApi.new(raw_client)
+    @dynamic_average = {}
   end
 
   def base_url
@@ -67,4 +68,14 @@ class Base
 
     final_stats.keys
   end
+
+  def get_dynamic_avg(name, val)
+    @dynamic_average[name] = [] if @dynamic_average[name].nil?
+    @dynamic_average[name] << val
+    output = @dynamic_average[name].sum(0.0) / @dynamic_average.size
+    output.round(2)
+  end
+
+
+
 end
