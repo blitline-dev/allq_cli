@@ -72,7 +72,7 @@ class Base
   def get_dynamic_avg(name, val)
     @dynamic_average[name] = [] if @dynamic_average[name].nil?
     @dynamic_average[name] << val
-    output = @dynamic_average[name].sum(0.0) / @dynamic_average.size
+    output = @dynamic_average[name].sum(0.0) / @dynamic_average[name].size
     output.round(2)
   end
 
