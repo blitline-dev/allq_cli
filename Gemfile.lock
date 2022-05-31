@@ -1,14 +1,14 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    allq_rest (1.2.91)
+    allq_rest (1.2.92)
       json (~> 2.1, >= 2.1.0)
       typhoeus (~> 1.0, >= 1.0.1)
     awesome_print (1.9.2)
     ethon (0.15.0)
       ffi (>= 1.15.0)
     ffi (1.15.5)
-    json (2.6.1)
+    json (2.6.2)
     lz4-ruby (0.3.3)
     oj (3.13.11)
     pastel (0.8.0)
