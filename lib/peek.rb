@@ -3,11 +3,18 @@ class Peek < Base
     tube = ask_for_tube('Throttle')
     prompt = TTY::Prompt.new
     where = prompt.select('From where?', %w[ready buried])
-    if where == 'ready'
-      job = @client.peek_get(tube)
-    elsif where == 'buried'
-      job = @client.peek_get(tube, buried: true)
+
+    result = prompt.collect do
+      key(:offset).ask('Offset?', convert: :int, default: 0)
     end
+    offset = result[:offset]
+
+    if where == 'ready'
+      job = @client.peek_get(tube, offset: offset)
+    elsif where == 'buried'
+      job = @client.peek_get(tube, buried: true, offset: offset)
+    end
+
     if job.body
       display_job(job)
     else

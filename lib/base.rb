@@ -1,3 +1,5 @@
+require 'base64'
+
 class Base
   def initialize
     url = base_url
@@ -13,6 +15,14 @@ class Base
 
   def base_url
     ENV['ALLQ_LOCAL_URL'] || '127.0.0.1:8090'
+  end
+
+  def call_raw_socat(json)
+    tcp_port = '127.0.0.1:7722'
+
+    cmd = %{echo '#{json.to_json}' | socat -t 10 -T 10 - tcp4-connect:#{tcp_port} }
+    output = `#{cmd}`
+    JSON.parse(output)
   end
 
   def get_text(v, num)
@@ -53,6 +63,12 @@ class Base
     end
     puts table.render(:unicode, padding: [0, 2, 0, 2])
     puts job.body
+    begin
+      decoded_string = Base64.decode64(job.body)
+      puts decoded_string
+    rescue => ex
+      # Ignore
+    end
   end
 
   def get_all_tube_names

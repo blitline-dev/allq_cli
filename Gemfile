@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gem 'oj', ">=2.13"
 gem 'awesome_print'
-gem 'allq_rest', '~> 1.2'
+gem 'allq_rest', '~> 1.3'
 gem 'lz4-ruby'
 gem 'tty-cursor'
 gem 'tty-box'
