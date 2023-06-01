@@ -1,6 +1,6 @@
 class Peek < Base
   def process
-    tube = ask_for_tube('Throttle')
+    tube = ask_for_tube('Peek')
     prompt = TTY::Prompt.new
     where = prompt.select('From where?', %w[ready buried])
 
